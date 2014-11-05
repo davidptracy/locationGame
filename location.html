@@ -23,7 +23,13 @@
 			console.log("Connected");
 		});
 
+		// an empty array to store all the player ids
 		var playerArray = [];
+
+
+		// =============================================
+		// 2 - when a location event comes in from the server
+		// =============================================
 
 		socket.on('locationFromServer', function(locationBroadcast){
 
@@ -33,23 +39,26 @@
 			console.log("Got location from ID " + id);
 			console.log("Coordinates " + coords);
 
+			
+			// if we have seen this player before, change their entry on the page
 			if (checkPlayers(id)){
 				document.getElementById("player"+playerArray.indexOf(id)).innerHTML = "Player " + playerArray.indexOf(id) + " : " + coords;
-			} else {
+			} 
 
+			// if we haven't seen the player before, add them to the list
+			// and create an entry on the page
+			else {
 				playerArray.push(id);
-
 				var li = document.createElement('li');
 				li.id = "player"+playerArray.indexOf(id);
-
-				li.innerHTML = "Player " + playerArray.indexOf(id) + " : " + coords;
-				
+				li.innerHTML = "Player " + playerArray.indexOf(id) + " : " + coords;				
 				playerList.appendChild(li);
 			}
-
 		});
 
+		// this function checks to see if we have already seen a player
 		function checkPlayers(playerId){
+			// this will return TRUE if the index of the id is greater than 0
 			return playerArray.indexOf(playerId) > -1;
 		}
 
@@ -57,6 +66,7 @@
 		var lon;
 		var myCoords = [];
 
+		// if the client has geolocation capabilites, run this code
 		if (navigator.geolocation) {
 			//alert("Allowed");
 
@@ -65,13 +75,10 @@
 			function successCallback(currentPosition) {
 				lat = currentPosition.coords.latitude;
 		        lon = currentPosition.coords.longitude;
+		        // cast the coordinates into an array to be transmitted
 		        myCoords = [lat, lon];
 
-		        console.log(myCoords);
-		        console.log(myCoords[0]);
-		        console.log(myCoords[1]);
-
-				// alert("latitude = " + lat + " longitude = " + lon );
+		        // send my location to the server
 				socket.emit ('clientLocation', myCoords )
 
 				document.getElementById("me").innerHTML = "My Coords : " + myCoords;
@@ -82,7 +89,7 @@
 			}
 
 		} else {
-			//alert("Not Allowed");
+			console.log("no geolocation");
 		}
 
 	</script>
